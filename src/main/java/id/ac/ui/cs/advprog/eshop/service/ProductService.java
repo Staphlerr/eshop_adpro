@@ -10,5 +10,5 @@ public interface ProductService {
     List<Product> findAll();
     Optional<Product> findById(String productId); // Add this method
     Product update(Product product);
-
+    void deleteById(String productId);
 }

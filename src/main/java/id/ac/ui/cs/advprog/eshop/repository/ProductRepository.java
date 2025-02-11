@@ -28,4 +28,8 @@ public class ProductRepository {
                 .filter(product -> product.getProductId().equals(productId))
                 .findFirst();
     }
+
+    public void deleteById(String productId) {
+        productData.removeIf(product -> product.getProductId().equals(productId));
+    }
 }
