@@ -7,14 +7,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class ProductRepository {
     private List<Product> productData = new ArrayList<>();
-    private static int idCounter;
 
     public Product create(Product product) {
-        product.setProductId(String.valueOf(idCounter++));
+        if (product.getProductId() == null || product.getProductId().isEmpty()) {
+            product.setProductId(UUID.randomUUID().toString());
+        }
         productData.add(product);
         return product;
     }
