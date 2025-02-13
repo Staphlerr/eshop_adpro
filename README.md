@@ -76,4 +76,97 @@ The code adheres to several clean code principles, such as meaningful names, foc
 
 This reflection highlights the importance of continuously evaluating and refining code to meet best practices and ensure long-term maintainability.
 
+### Reflection for Exercise 2
+
+#### **1. Writing Unit Tests: Feelings and Insights**
+After writing the unit tests, I feel a sense of confidence in the correctness and reliability of the code. Writing unit tests forces me to think critically about edge cases, potential bugs, and the overall behavior of the application. It also helps me understand the codebase better by breaking down each method, as I try to focus on testing unique behaviors and edge cases rather than every possible input.
+
+#### **2. How Many Unit Tests Should Be Made in a Class?**
+The number of unit tests in a class depends on the complexity and functionality of the class. Each test should focus on verifying one specific behavior or scenario. As a general rule, aim to cover all possible scenarios, including positive (happy path) and negative (edge cases) scenarios. For example:
+- A `create` method might need tests for valid inputs, invalid inputs, duplicate IDs, etc.
+- An `update` method / `delete` method might need tests for updating existing products, handling non-existent products, and validating updated fields.
+
+#### **3. Ensuring Guarantee Bug-free/Error-free Unit Test Coverage**
+While achieving high code coverage (e.g., 80-90%) is a good indicator of thorough testing, **100% code coverage does not guarantee bug-free code**. Code coverage only measures whether the code was executed during testing, not whether the logic is correct. For example:
+- A test might execute a line of code but fail to validate its output.
+- Edge cases or complex interactions between components might still be untested.
+
+---
+
+#### **4. Functional Test Suite for Product List Count**
+Suppose I create a new functional test suite to verify the number of items in the product list. If I follow the same structure as `CreateProductFunctionalTest.java`, I would end up duplicating setup procedures and instance variables. This raises concerns about code cleanliness and maintainability.
+
+##### **Potential Clean Code Issues**
+1. **Code Duplication**:
+  - Repeating the same setup procedures (e.g., navigating to the home page, clicking buttons) across multiple test classes violates the DRY (Don't Repeat Yourself) principle.
+  - Duplicate code increases maintenance effort. If the application's navigation flow changes, I would need to update the setup in every test class.
+
+2. **Reduced Readability**:
+  - Copying large chunks of boilerplate code makes the new test suite harder to read and understand. The actual test logic gets buried under repetitive setup code.
+
+3. **Tight Coupling**:
+  - Hardcoding navigation steps (e.g., clicking "Let's Create Product!") ties the tests to the current UI structure. If the UI changes, the tests will break.
+
+##### **Reasons for These Issues**
+- Lack of abstraction: Common setup procedures and utility methods are not extracted into reusable components.
+- Over-reliance on Selenium's direct element interactions without encapsulating them into helper methods.
+
+##### **Suggested Improvements**
+1. **Extract Common Setup into a Base Class**:
+  - Create a base class that contains shared setup procedures and utility methods. All functional test classes can extend this base class.
+  ```java
+  public abstract class BaseFunctionalTest {
+    @LocalServerPort
+    protected int serverPort;
+  
+    @Value("${app.baseUrl:http://localhost}")
+    protected String testBaseUrl;
+  
+    protected String baseUrl;
+  
+    @BeforeEach
+    void setupTest() {
+      baseUrl = String.format("%s:%d", testBaseUrl, serverPort);
+    }
+  
+    protected void navigateToProductList(ChromeDriver driver) {
+      driver.get(baseUrl);
+      driver.findElement(By.linkText("Let's Create Product!")).click();
+    }
+}
+  ```
+
+2. **Use Page Object Model (POM)**:
+  - Encapsulate UI interactions into separate classes (pages) to decouple test logic from UI details.
+
+3. **Refactor the New Test Suite**:
+  - Use the base class and page objects to simplify the new test suite. For example:
+   ```java
+   @SpringBootTest(webEnvironment = RANDOM_PORT)
+   @ExtendWith(SeleniumJupiter.class)
+   class ProductListCountFunctionalTest extends BaseFunctionalTest {
+
+       @Test
+       void testProductListCount(ChromeDriver driver) {
+           HomePage homePage = new HomePage(driver);
+           homePage.navigateToProductList();
+
+           ProductListPage productListPage = new ProductListPage(driver);
+           int initialCount = productListPage.getProductCount();
+
+           // Add a product and verify the count increases
+           // Simulate adding a product...
+
+           int updatedCount = productListPage.getProductCount();
+           assertEquals(initialCount + 1, updatedCount);
+       }
+   }
+   ```
+
+---
+
+#### **5. Conclusion**
+Creating a new functional test suite highlights the importance of clean code principles like DRY, readability, and maintainability. Without proper abstraction and reuse, the new test suite risks introducing duplication and reducing code quality. By extracting common setup procedures into a base class and adopting the Page Object Model, we can make the code cleaner, more modular, and easier to maintain.
+
+Additionally, while code coverage is a valuable metric, it should not be the sole measure of test quality. Thoughtful test design, edge case coverage, and manual review are essential to ensuring a robust and reliable tests.
 </details>
