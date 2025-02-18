@@ -8,6 +8,12 @@ class EshopApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// This test ensures that the Spring application context loads successfully
 	}
 
+	@Test
+	void testMainMethod() {
+		// Call the main method directly to ensure it runs without errors
+		EshopApplication.main(new String[]{});
+	}
 }
