@@ -35,7 +35,12 @@ public class ProductController {
 
     @GetMapping("/edit/{id}")
     public String editProductPage(@PathVariable String id, Model model) {
-        Product product = service.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        // Check if the product exists
+        var productOptional = service.findById(id);
+        if (productOptional.isEmpty()) {
+            return "redirect:/product/list"; // Redirect to product list if product is not found
+        }
+        Product product = productOptional.get();
         model.addAttribute("product", product);
         return "editProduct";
     }
