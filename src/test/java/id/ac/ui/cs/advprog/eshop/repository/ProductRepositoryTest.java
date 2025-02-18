@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -128,5 +129,79 @@ class ProductRepositoryTest {
         // Ensure that the repository remains empty
         Iterator<Product> productIterator = productRepository.findAll();
         assertFalse(productIterator.hasNext());
+    }
+
+    @Test
+    void testCreate_GenerateProductId() {
+        // Arrange: Create a product without setting a productId
+        Product product = new Product();
+        product.setProductName("Sampo Cap Bambang");
+        product.setProductQuantity(100);
+
+        // Act: Add the product to the repository
+        Product savedProduct = productRepository.create(product);
+
+        // Assert: Verify that the product was assigned a non-null and non-empty productId
+        assertNotNull(savedProduct.getProductId());
+        assertFalse(savedProduct.getProductId().isEmpty());
+
+        // Assert: Verify that the generated productId is a valid UUID
+        assertDoesNotThrow(() -> UUID.fromString(savedProduct.getProductId()));
+
+        // Assert: Verify that the product exists in the repository with the generated productId
+        Optional<Product> foundProduct = productRepository.findById(savedProduct.getProductId());
+        assertTrue(foundProduct.isPresent());
+        assertEquals("Sampo Cap Bambang", foundProduct.get().getProductName());
+        assertEquals(100, foundProduct.get().getProductQuantity());
+    }
+
+    @Test
+    void testCreate_GenerateProductId_WhenNull() {
+        // Arrange: Create a product with a null productId
+        Product product = new Product();
+        product.setProductId(null); // Explicitly set productId to null
+        product.setProductName("Sampo Cap Bambang");
+        product.setProductQuantity(100);
+
+        // Act: Add the product to the repository
+        Product savedProduct = productRepository.create(product);
+
+        // Assert: Verify that the product was assigned a non-null and non-empty productId
+        assertNotNull(savedProduct.getProductId());
+        assertFalse(savedProduct.getProductId().isEmpty());
+
+        // Assert: Verify that the generated productId is a valid UUID
+        assertDoesNotThrow(() -> UUID.fromString(savedProduct.getProductId()));
+
+        // Assert: Verify that the product exists in the repository with the generated productId
+        Optional<Product> foundProduct = productRepository.findById(savedProduct.getProductId());
+        assertTrue(foundProduct.isPresent());
+        assertEquals("Sampo Cap Bambang", foundProduct.get().getProductName());
+        assertEquals(100, foundProduct.get().getProductQuantity());
+    }
+
+    @Test
+    void testCreate_GenerateProductId_WhenEmpty() {
+        // Arrange: Create a product with an empty productId
+        Product product = new Product();
+        product.setProductId(""); // Explicitly set productId to an empty string
+        product.setProductName("Sampo Cap Usep");
+        product.setProductQuantity(50);
+
+        // Act: Add the product to the repository
+        Product savedProduct = productRepository.create(product);
+
+        // Assert: Verify that the product was assigned a non-null and non-empty productId
+        assertNotNull(savedProduct.getProductId());
+        assertFalse(savedProduct.getProductId().isEmpty());
+
+        // Assert: Verify that the generated productId is a valid UUID
+        assertDoesNotThrow(() -> UUID.fromString(savedProduct.getProductId()));
+
+        // Assert: Verify that the product exists in the repository with the generated productId
+        Optional<Product> foundProduct = productRepository.findById(savedProduct.getProductId());
+        assertTrue(foundProduct.isPresent());
+        assertEquals("Sampo Cap Usep", foundProduct.get().getProductName());
+        assertEquals(50, foundProduct.get().getProductQuantity());
     }
 }
