@@ -1,4 +1,14 @@
-<details open>
+# Eshop Advance Programming
+
+Name: Belva Ghani Abhinaya
+
+Class: Advance Programming B
+
+Student Number: 2306203526
+
+Link to the eshop -> [Click This!](https://premier-willow-staphlerr-5a1cb0bd.koyeb.app/)
+
+<details>
 <summary><b>Reflection on Module 1</b></summary>
 <br>
 
@@ -169,4 +179,20 @@ Suppose I create a new functional test suite to verify the number of items in th
 Creating a new functional test suite highlights the importance of clean code principles like DRY, readability, and maintainability. Without proper abstraction and reuse, the new test suite risks introducing duplication and reducing code quality. By extracting common setup procedures into a base class and adopting the Page Object Model, we can make the code cleaner, more modular, and easier to maintain.
 
 Additionally, while code coverage is a valuable metric, it should not be the sole measure of test quality. Thoughtful test design, edge case coverage, and manual review are essential to ensuring a robust and reliable tests.
+</details>
+
+<details open>
+<summary><b>Reflection on Module 2</b></summary>
+<br>
+
+### Reflection for Exercise
+
+#### **1. Code Quality Issues and Fixes**
+The primary code quality issue I addressed was the **unused import `org.springframework.web.bind.annotation.*`**. This was flagged by PMD, and I resolved it by replacing the wildcard import with specific imports for the annotations actually used in the code, such as `@GetMapping`, `@PostMapping`, and `@PathVariable`. Additionally, I ensured that all other imports were necessary and removed any redundancies to maintain clean and readable code.
+
+---
+
+#### **2. CI/CD Implementation and Evaluation**
+The implemented CI/CD workflows on GitHub Actions align well with the principles of **Continuous Integration (CI)** but only partially fulfill **Continuous Deployment (CD)**. The CI pipeline automatically runs tests and generates code coverage reports on every push or pull request, ensuring that issues are caught early in the development cycle. However, the CD process is not fully automated yet, as deployment to the PaaS requires additional configuration. To achieve true CD, I would need to integrate a step that automatically deploys the application to the chosen platform whenever changes are merged into the main branch.
+
 </details>
