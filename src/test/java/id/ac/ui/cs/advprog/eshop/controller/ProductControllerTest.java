@@ -38,10 +38,7 @@ class ProductControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Initialize MockMvc with the controller
         mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
-
-        // Create a mock product for testing
         mockProduct = new Product();
         mockProduct.setProductId("eb558e9f-1c39-460e-8860-71af6af63bd6");
         mockProduct.setProductName("Sampo Cap Bambang");
@@ -92,20 +89,11 @@ class ProductControllerTest {
 
     @Test
     void testEditProductPage_NonExistingProduct() {
-        // Arrange: Mock the service to return an empty Optional when findById is called
         String productId = "nonExistingId";
         when(productService.findById(productId)).thenReturn(Optional.empty());
-
-        // Act: Call the editProductPage method directly
         String viewName = productController.editProductPage(productId, model);
-
-        // Assert: Verify that no product was added to the model
         verify(model, never()).addAttribute(eq("product"), any());
-
-        // Assert: Verify that the view name is a redirect to the product list page
         assertEquals("redirect:/product/list", viewName);
-
-        // Verify that the findById method was called with the correct ID
         verify(productService, times(1)).findById(productId);
     }
 

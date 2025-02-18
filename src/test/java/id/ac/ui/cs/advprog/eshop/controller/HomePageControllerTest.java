@@ -17,16 +17,14 @@ class HomePageControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Initialize MockMvc with the controller
         mockMvc = MockMvcBuilders.standaloneSetup(new HomePageController()).build();
     }
 
     @Test
     void testHomePage() throws Exception {
-        // Perform a GET request to the root URL ("/")
         mockMvc.perform(get("/"))
-                .andExpect(status().isOk()) // Expect HTTP 200 OK
-                .andExpect(view().name("homePage")) // Expect the view name to be "homePage"
-                .andExpect(model().size(0)); // Expect no model attributes
+                .andExpect(status().isOk())
+                .andExpect(view().name("homePage"))
+                .andExpect(model().size(0));
     }
 }

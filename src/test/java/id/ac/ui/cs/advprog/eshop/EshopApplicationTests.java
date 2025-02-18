@@ -13,7 +13,6 @@ class EshopApplicationTests {
 
 	@Test
 	void testMainMethod() {
-		// Call the main method directly to ensure it runs without errors
 		EshopApplication.main(new String[]{});
 	}
 }
