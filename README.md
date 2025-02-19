@@ -195,4 +195,8 @@ The primary code quality issue I addressed was the **unused import `org.springfr
 #### 2. CI/CD Implementation and Evaluation
 The implemented CI/CD workflows on GitHub Actions fully meet the definition of **Continuous Integration (CI)** and **Continuous Deployment (CD)**. The CI pipeline automatically runs tests, generates code coverage reports, and ensures code quality on every push or pull request, catching issues early in the development process. For CD, I successfully automated the deployment to **Koyeb** using a **Dockerfile** that packages the Spring Boot application into a lightweight Alpine-based image. The Dockerfile uses a multi-stage build to optimize the final image size, ensuring efficient deployment. With this setup, every merge to the main branch triggers an automated build and deployment process, making the workflow truly continuous.
 
+---
+
+#### 3. Code Coverage
+![img.png](img.png)
 </details>
