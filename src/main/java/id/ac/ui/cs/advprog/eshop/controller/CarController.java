@@ -16,10 +16,15 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/car")
-public class CarController extends ProductController {
+public class CarController {
 
     @Autowired
-    private CarService carService;
+    private final CarService carService;
+
+    @Autowired
+    public CarController(CarService carService) {
+        this.carService = carService;
+    }
 
     @GetMapping("/createCar")
     public String createCarPage(Model model) {
