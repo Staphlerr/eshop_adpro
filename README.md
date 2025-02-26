@@ -12,7 +12,7 @@ Link to the eshop -> [Click This!](https://premier-willow-staphlerr-5a1cb0bd.koy
 <summary><b>Reflection on Module 1</b></summary>
 <br>
 
-### Reflection for Exercise 1
+### Reflection 1 for Exercise 1
 #### 1. Clean Code Principles
 
 **a. Meaningful Names:**
@@ -86,7 +86,7 @@ The code adheres to several clean code principles, such as meaningful names, foc
 
 This reflection highlights the importance of continuously evaluating and refining code to meet best practices and ensure long-term maintainability.
 
-### Reflection for Exercise 2
+### Reflection 1 for Exercise 2
 
 #### 1. Writing Unit Tests: Feelings and Insights
 After writing the unit tests, I feel a sense of confidence in the correctness and reliability of the code. Writing unit tests forces me to think critically about edge cases, potential bugs, and the overall behavior of the application. It also helps me understand the codebase better by breaking down each method, as I try to focus on testing unique behaviors and edge cases rather than every possible input.
@@ -181,11 +181,11 @@ Creating a new functional test suite highlights the importance of clean code pri
 Additionally, while code coverage is a valuable metric, it should not be the sole measure of test quality. Thoughtful test design, edge case coverage, and manual review are essential to ensuring a robust and reliable tests.
 </details>
 
-<details open>
+<details>
 <summary><b>Reflection on Module 2</b></summary>
 <br>
 
-### Reflection
+### Reflection 2
 
 #### 1. Code Quality Issues and Fixes
 The primary code quality issue I addressed was the **unused import `org.springframework.web.bind.annotation.*`**. This was flagged by PMD, and I resolved it by replacing the wildcard import with specific imports for the annotations actually used in the code, such as `@GetMapping`, `@PostMapping`, and `@PathVariable`. Additionally, I ensured that all other imports were necessary and removed any redundancies to maintain clean and readable code. These changes improved the overall maintainability of the codebase and aligned with best practices for Java development.
@@ -199,4 +199,196 @@ The implemented CI/CD workflows on GitHub Actions fully meet the definition of *
 
 #### 3. Code Coverage
 ![img.png](img.png)
+</details>
+
+<details open>
+<summary><b>Reflection on Module 3</b></summary>
+<br>
+
+### Reflection 3
+
+#### 1) What Principles Were Applied?
+
+##### a) Single Responsibility Principle (SRP)
+Each class now has a single responsibility:
+- **`CarController`**: Handles HTTP requests and delegates business logic to `CarService`. For example:
+  ```java
+  @PostMapping("/createCar")
+  public String createCarPost(@ModelAttribute("car") Car car) {
+      carService.create(car); // Delegates creation logic to CarService
+      return "redirect:listCar";
+  }
+  ```
+  The controller does not handle data storage directly; it relies on `CarService`.
+
+- **`CarRepository`**: Manages data storage and retrieval. For example:
+  ```java
+  public Car findById(String id) {
+      for (Car car : carData) {
+          if (car.getCarId().equals(id)) {
+              return car;
+          }
+      }
+      return null;
+  }
+  ```
+  This method focuses solely on finding a car by its ID.
+
+##### b) Open/Closed Principle (OCP)
+The code is open for extension but closed for modification:
+- In `ProductRepository`, adding a new query (e.g., filtering products by name) can be done without modifying existing methods:
+  ```java
+  public Optional<Product> findByName(String name) {
+      return productData.stream()
+              .filter(product -> product.getProductName().equals(name))
+              .findFirst();
+  }
+  ```
+  Existing methods like `findById` remain untouched.
+
+##### c) Liskov Substitution Principle (LSP)
+All implementations of interfaces adhere to their contracts:
+- For example, `CarServiceImpl` implements all methods defined in `CarService`:
+  ```java
+  @Override
+  public Car findById(String carId) {
+      return carRepository.findById(carId);
+  }
+  ```
+  This ensures that `CarServiceImpl` can replace `CarService` without breaking functionality.
+
+##### d) Interface Segregation Principle (ISP)
+Interfaces are specific to their responsibilities:
+- `CarService` and `ProductService` are separate interfaces, avoiding unnecessary dependencies:
+  ```java
+  public interface CarService {
+      Car create(Car car);
+      List<Car> findAll();
+      Car findById(String carId);
+      void update(String carId, Car car);
+      void deleteCarById(String id);
+  }
+  ```
+  `CarService` does not include methods irrelevant to cars, such as `filterByCategory`.
+
+##### e) Dependency Inversion Principle (DIP)
+High-level modules depend on abstractions rather than concrete implementations:
+- For example, `CarController` depends on `CarService` (an interface), not `CarServiceImpl`:
+  ```java
+  private final CarService carService;
+
+  @Autowired
+  public CarController(CarService carService) {
+      this.carService = carService;
+  }
+  ```
+  This allows flexibility in swapping implementations (e.g., mocking `CarService` in tests).
+
+---
+
+#### 2) Advantages of Applying SOLID Principles
+
+##### a) Improved Maintainability
+- **Example**: If we need to change how cars are stored, we only modify `CarRepository` without affecting `CarController`:
+  ```java
+  public Car findById(String id) {
+      // Logic for finding a car by ID
+  }
+  ```
+  The controller remains unchanged because it delegates storage logic to the repository.
+
+##### b) Enhanced Flexibility
+- **Example**: Adding a new feature (e.g., filtering cars by color) does not require modifying existing methods:
+  ```java
+  public List<Car> findByColor(String color) {
+      return carData.stream()
+              .filter(car -> car.getCarColor().equals(color))
+              .toList();
+  }
+  ```
+  Existing methods like `findAll` remain unaffected.
+
+##### c) Better Testability
+- **Example**: With DIP, we can mock `CarService` in unit tests for `CarController`:
+  ```java
+  @Mock
+  private CarService carService;
+
+  @Test
+  public void testCreateCar() {
+      Car car = new Car();
+      when(carService.create(car)).thenReturn(car);
+      // Test logic here
+  }
+  ```
+
+##### d) Reduced Code Duplication
+- **Example**: Separating `CarService` and `ProductService` avoids redundant methods:
+  ```java
+  public interface CarService {
+      Car create(Car car);
+  }
+
+  public interface ProductService {
+      Product create(Product product);
+  }
+  ```
+  Each interface serves a specific purpose.
+
+---
+
+#### 3) Disadvantages of Not Applying SOLID Principles
+
+##### a) Tight Coupling
+- **Example**: Without DIP, `CarController` would depend directly on `CarServiceImpl`:
+  ```java
+  private final CarServiceImpl carService = new CarServiceImpl();
+  ```
+  Switching to a different implementation (e.g., a caching service) would require modifying the controller.
+
+##### b) Code Bloat
+- **Example**: Violating SRP leads to bloated classes:
+  ```java
+  public class CarController {
+      public String createCarPost(Car car) {
+          // Handle routing
+          // Handle business logic
+          // Handle data storage
+      }
+  }
+  ```
+  This makes the class harder to read and maintain.
+
+##### c) Fragile Code
+- **Example**: Without OCP, adding a new feature (e.g., filtering cars by color) would require modifying existing methods:
+  ```java
+  public List<Car> findAll() {
+      // Original logic
+      // Add filtering logic here
+  }
+  ```
+  This increases the risk of introducing bugs.
+
+##### d) Poor Scalability
+- **Example**: Violating ISP results in interfaces with unnecessary methods:
+  ```java
+  public interface CarService {
+      Car create(Car car);
+      List<Car> findAll();
+      Car filterByCategory(String category); // Irrelevant for cars
+  }
+  ```
+  This confuses developers and complicates maintenance.
+
+---
+
+#### Conclusion
+
+By applying SOLID principles, the project achieves:
+- **Maintainability**: Easier to update and debug.
+- **Flexibility**: Extensible without breaking existing code.
+- **Testability**: Simplifies unit testing with dependency injection.
+- **Scalability**: Supports future growth without excessive refactoring.
+
+These principles ensure that the codebase remains robust, clean, and adaptable to changing requirements.
 </details>
