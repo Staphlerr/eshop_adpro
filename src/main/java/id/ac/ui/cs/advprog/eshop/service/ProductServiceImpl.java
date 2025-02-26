@@ -32,14 +32,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Optional<Product> findById(String productId) {
-        return productRepository.findById(productId); // Delegate to repository
+        return productRepository.findById(productId);
     }
 
     @Override
     public Product update(Product product) {
         Optional<Product> existingProduct = productRepository.findById(product.getProductId());
         if (existingProduct.isPresent()) {
-            // Update the existing product with new values
             Product updatedProduct = existingProduct.get();
             updatedProduct.setProductName(product.getProductName());
             updatedProduct.setProductQuantity(product.getProductQuantity());
