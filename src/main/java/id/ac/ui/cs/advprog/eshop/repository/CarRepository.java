@@ -11,8 +11,6 @@ import java.util.UUID;
 @Repository
 public class CarRepository {
 
-    static int id = 0;
-
     private final List<Car> carData = new ArrayList<>();
 
     public Car createCar(Car car) {
@@ -38,13 +36,12 @@ public class CarRepository {
     }
 
     public Car update(String id, Car updatedCar) {
-        for (int i = 0; i < carData.size(); i++) {
-            Car car = carData.get(i);
-            if (car.getCarId().equals(id)) {
-                car.setCarName(updatedCar.getCarName());
-                car.setCarColor(updatedCar.getCarColor());
-                car.setCarQuantity(updatedCar.getCarQuantity());
-            }
+        Car existingCar = findById(id);
+        if (existingCar != null) {
+            existingCar.setCarName(updatedCar.getCarName());
+            existingCar.setCarColor(updatedCar.getCarColor());
+            existingCar.setCarQuantity(updatedCar.getCarQuantity());
+            return existingCar;
         }
         return null;
     }
