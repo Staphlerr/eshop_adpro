@@ -1,9 +1,9 @@
 package id.ac.ui.cs.advprog.eshop.model;
 
+import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 import lombok.Builder;
 import lombok.Getter;
 import java.util.Map;
-import java.util.Arrays;
 
 @Getter
 @Builder
@@ -14,7 +14,7 @@ public class Payment {
     private Map<String, String> paymentData;
     private Order order;
 
-    public Payment(String id, String method, String status, Map<String, String> paymentData, Order order) {
+    public Payment(String id, String method, Map<String, String> paymentData, Order order) {
         if (order == null) {
             throw new IllegalArgumentException("Order cannot be null.");
         }
@@ -22,18 +22,23 @@ public class Payment {
         this.method = method;
         this.paymentData = paymentData;
         this.order = order;
-        setStatus(status);
+        this.status = PaymentStatus.PENDING.getValue();
+    }
+
+    public Payment(String id, String method, String status, Map<String, String> paymentData, Order order) {
+        this(id, method, paymentData, order);
+        this.setStatus(status);
     }
 
     public void setStatus(String status) {
-        String[] validStatuses = {"PENDING", "SUCCESS", "REJECTED"};
-        if (Arrays.stream(validStatuses).noneMatch(valid -> valid.equals(status))) {
+        if (!PaymentStatus.contains(status)) {
             throw new IllegalArgumentException("Invalid payment status: " + status);
         }
         this.status = status;
-        if (status.equals("SUCCESS")) {
+
+        if (status.equals(PaymentStatus.SUCCESS.getValue())) {
             this.order.setStatus("SUCCESS");
-        } else if (status.equals("REJECTED")) {
+        } else if (status.equals(PaymentStatus.REJECTED.getValue())) {
             this.order.setStatus("FAILED");
         }
     }
