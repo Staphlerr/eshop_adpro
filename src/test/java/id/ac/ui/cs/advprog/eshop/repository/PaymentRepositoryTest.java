@@ -45,7 +45,7 @@ class PaymentRepositoryTest {
                 "VOUCHER", PaymentStatus.PENDING.getValue(), paymentData1, order1);
         payments.add(payment1);
 
-        Map<String, String> paymentData2 = Map.of("XYZ Bank", "ABC1234567");
+        Map<String, String> paymentData2 = Map.of("bankName", "BCA", "referenceCode", "REF123456");
         Payment payment2 = new Payment("37f51234-128a-51c4-309f-c3132ba55",
                 "BANK_TRANSFER", PaymentStatus.PENDING.getValue(), paymentData2, order2);
         payments.add(payment2);
