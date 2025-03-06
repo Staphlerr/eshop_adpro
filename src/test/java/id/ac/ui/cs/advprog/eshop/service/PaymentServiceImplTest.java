@@ -18,9 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PaymentServiceImplTest {
+public class PaymentServiceImplTest {
     @InjectMocks
-    PaymentService paymentService;
+    PaymentServiceImpl paymentService;
 
     @Mock
     PaymentRepository paymentRepository;
@@ -53,12 +53,13 @@ class PaymentServiceImplTest {
 
         // Setup PaymentData
         paymentDataVoucher = Map.of("voucherCode", "ESHOP1234ABC5678");
-        paymentDataBank = Map.of("XYZ Bank", "ABC1234567");
+        paymentDataBank = Map.of("bankName", "BCA", "referenceCode", "REF123456");
     }
 
     @Test
     void testAddPaymentVoucherSuccess() {
-        Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87255", "VOUCHER", PaymentStatus.SUCCESS.getValue(), paymentDataVoucher, order1);
+        Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87255",
+                "VOUCHER", paymentDataVoucher, order1);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
@@ -72,7 +73,7 @@ class PaymentServiceImplTest {
     @Test
     void testAddPaymentBankTransferSuccess() {
         Payment payment = new Payment("37f51234-128a-51c4-309f-c3132ba55",
-                "BANK_TRANSFER", PaymentStatus.PENDING.getValue(), paymentDataBank, order2);
+                "BANK_TRANSFER", paymentDataBank, order2);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
@@ -87,7 +88,7 @@ class PaymentServiceImplTest {
     void testAddPaymentVoucherRejected_InvalidLength() {
         Map<String, String> invalidVoucher = Map.of("voucherCode", "ESHOP1234ABCD");
         Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87256",
-                "VOUCHER", PaymentStatus.REJECTED.getValue(), invalidVoucher, order1);
+                "VOUCHER", invalidVoucher, order1);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
@@ -102,7 +103,7 @@ class PaymentServiceImplTest {
     void testAddPaymentVoucherRejected_NoESHOPPrefix() {
         Map<String, String> invalidVoucher = Map.of("voucherCode", "INVALID1234ABC5678");
         Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87257",
-                "VOUCHER", PaymentStatus.REJECTED.getValue(), invalidVoucher, order1);
+                "VOUCHER", invalidVoucher, order1);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
@@ -115,9 +116,9 @@ class PaymentServiceImplTest {
 
     @Test
     void testAddPaymentVoucherRejected_No8Digits() {
-        Map<String, String> invalidVoucher = Map.of("voucherCode", "ESHOPABCDEFGHJKLMN"); // Tidak ada 8 angka
+        Map<String, String> invalidVoucher = Map.of("voucherCode", "ESHOPABCDEFGHJKLMN");
         Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87258",
-                "VOUCHER", PaymentStatus.REJECTED.getValue(), invalidVoucher, order1);
+                "VOUCHER", invalidVoucher, order1);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
@@ -132,7 +133,7 @@ class PaymentServiceImplTest {
     void testAddPaymentBankTransferRejected_EmptyBankName() {
         Map<String, String> invalidBankTransfer = Map.of("bankName", "", "referenceCode", "ABC1234567");
         Payment payment = new Payment("37f51234-128a-51c4-309f-c3132ba56",
-                "BANK_TRANSFER", PaymentStatus.REJECTED.getValue(), invalidBankTransfer, order2);
+                "BANK_TRANSFER", invalidBankTransfer, order2);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
@@ -147,7 +148,7 @@ class PaymentServiceImplTest {
     void testAddPaymentBankTransferRejected_EmptyReferenceCode() {
         Map<String, String> invalidBankTransfer = Map.of("bankName", "XYZ Bank", "referenceCode", "");
         Payment payment = new Payment("37f51234-128a-51c4-309f-c3132ba57",
-                "BANK_TRANSFER", PaymentStatus.REJECTED.getValue(), invalidBankTransfer, order2);
+                "BANK_TRANSFER", invalidBankTransfer, order2);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
@@ -162,7 +163,7 @@ class PaymentServiceImplTest {
     void testAddPaymentBankTransferRejected_BothEmpty() {
         Map<String, String> invalidBankTransfer = Map.of("bankName", "", "referenceCode", "");
         Payment payment = new Payment("37f51234-128a-51c4-309f-c3132ba58",
-                "BANK_TRANSFER", PaymentStatus.REJECTED.getValue(), invalidBankTransfer, order2);
+                "BANK_TRANSFER", invalidBankTransfer, order2);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
@@ -177,10 +178,9 @@ class PaymentServiceImplTest {
     @Test
     void testSetStatusSuccess() {
         Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87255",
-                "VOUCHER", PaymentStatus.PENDING.getValue(), paymentDataVoucher, order1);
+                "VOUCHER", paymentDataVoucher, order1);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
-        when(paymentRepository.findById(payment.getId())).thenReturn(payment);
 
         Payment result = paymentService.setStatus(payment, PaymentStatus.SUCCESS.getValue());
 
@@ -192,10 +192,9 @@ class PaymentServiceImplTest {
     @Test
     void testSetStatusRejected() {
         Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87255",
-                "VOUCHER", PaymentStatus.PENDING.getValue(), paymentDataVoucher, order1);
+                "VOUCHER", paymentDataVoucher, order1);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
-        when(paymentRepository.findById(payment.getId())).thenReturn(payment);
 
         Payment result = paymentService.setStatus(payment, PaymentStatus.REJECTED.getValue());
 
@@ -207,9 +206,7 @@ class PaymentServiceImplTest {
     @Test
     void testSetStatusInvalid() {
         Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87255",
-                "VOUCHER", PaymentStatus.PENDING.getValue(), paymentDataVoucher, order1);
-
-        when(paymentRepository.findById(payment.getId())).thenReturn(payment);
+                "VOUCHER", paymentDataVoucher, order1);
 
         assertThrows(IllegalArgumentException.class, () -> paymentService.setStatus(payment, "MEOW"));
         verify(paymentRepository, times(0)).save(any(Payment.class));
@@ -218,7 +215,7 @@ class PaymentServiceImplTest {
     @Test
     void testGetPayment() {
         Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87255",
-                "VOUCHER", PaymentStatus.PENDING.getValue(), paymentDataVoucher, order1);
+                "VOUCHER", paymentDataVoucher, order1);
 
         when(paymentRepository.findById(payment.getId())).thenReturn(payment);
 
@@ -232,9 +229,9 @@ class PaymentServiceImplTest {
     void testGetAllPayments() {
         List<Payment> payments = Arrays.asList(
                 new Payment("a2c47718-4b37-4664-81a7-f41bb87255",
-                        "VOUCHER", PaymentStatus.PENDING.getValue(), paymentDataVoucher, order1),
+                        "VOUCHER", paymentDataVoucher, order1),
                 new Payment("37f51234-128a-51c4-309f-c3132ba55",
-                        "BANK_TRANSFER", PaymentStatus.PENDING.getValue(), paymentDataBank, order2)
+                        "BANK_TRANSFER", paymentDataBank, order2)
         );
 
         when(paymentRepository.findAll()).thenReturn(payments);
