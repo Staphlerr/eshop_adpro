@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.eshop.service;
 
 import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
+import id.ac.ui.cs.advprog.eshop.enums.OrderStatus;
 import id.ac.ui.cs.advprog.eshop.model.Order;
 import id.ac.ui.cs.advprog.eshop.model.Payment;
 import id.ac.ui.cs.advprog.eshop.model.Product;
@@ -45,8 +46,10 @@ class PaymentServiceImplTest {
         product2.setProductQuantity(1);
         products2.add(product2);
 
-        order1 = new Order("13652556-012a-4c07-b546-54eb1396d79b", products1, 1708560000L, "Safira Sudrajat");
-        order2 = new Order("7f9e15bb-4b15-42f4-aebc-c3af385fb078", products2, 1708570000L, "Bambang Sudrajat");
+        order1 = new Order("13652556-012a-4c07-b546-54eb1396d79b",
+                products1, 1708560000L, "Safira Sudrajat");
+        order2 = new Order("7f9e15bb-4b15-42f4-aebc-c3af385fb078",
+                products2, 1708570000L, "Bambang Sudrajat");
 
         // Setup PaymentData
         paymentDataVoucher = Map.of("voucherCode", "ESHOP1234ABC5678");
@@ -62,96 +65,111 @@ class PaymentServiceImplTest {
         Payment result = paymentService.addPayment(order1, "VOUCHER", paymentDataVoucher);
 
         assertEquals(PaymentStatus.SUCCESS.getValue(), result.getStatus());
+        assertEquals(OrderStatus.SUCCESS.getValue(), result.getOrder().getStatus());
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
     @Test
     void testAddPaymentBankTransferSuccess() {
-        Payment payment = new Payment("37f51234-128a-51c4-309f-c3132ba55", "BANK_TRANSFER", PaymentStatus.PENDING.getValue(), paymentDataBank, order2);
+        Payment payment = new Payment("37f51234-128a-51c4-309f-c3132ba55",
+                "BANK_TRANSFER", PaymentStatus.PENDING.getValue(), paymentDataBank, order2);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
         Payment result = paymentService.addPayment(order2, "BANK_TRANSFER", paymentDataBank);
 
-        assertEquals(PaymentStatus.PENDING.getValue(), result.getStatus());
+        assertEquals(PaymentStatus.SUCCESS.getValue(), result.getStatus());
+        assertEquals(OrderStatus.SUCCESS.getValue(), result.getOrder().getStatus());
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
     @Test
     void testAddPaymentVoucherRejected_InvalidLength() {
-        Map<String, String> invalidVoucher = Map.of("voucherCode", "ESHOP1234ABCD"); // Kurang dari 16 karakter
-        Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87256", "VOUCHER", PaymentStatus.REJECTED.getValue(), invalidVoucher, order1);
+        Map<String, String> invalidVoucher = Map.of("voucherCode", "ESHOP1234ABCD");
+        Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87256",
+                "VOUCHER", PaymentStatus.REJECTED.getValue(), invalidVoucher, order1);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
         Payment result = paymentService.addPayment(order1, "VOUCHER", invalidVoucher);
 
         assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), result.getOrder().getStatus());
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
     @Test
     void testAddPaymentVoucherRejected_NoESHOPPrefix() {
-        Map<String, String> invalidVoucher = Map.of("voucherCode", "INVALID1234ABC5678"); // Tidak diawali "ESHOP"
-        Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87257", "VOUCHER", PaymentStatus.REJECTED.getValue(), invalidVoucher, order1);
+        Map<String, String> invalidVoucher = Map.of("voucherCode", "INVALID1234ABC5678");
+        Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87257",
+                "VOUCHER", PaymentStatus.REJECTED.getValue(), invalidVoucher, order1);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
         Payment result = paymentService.addPayment(order1, "VOUCHER", invalidVoucher);
 
         assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), result.getOrder().getStatus());
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
     @Test
     void testAddPaymentVoucherRejected_No8Digits() {
         Map<String, String> invalidVoucher = Map.of("voucherCode", "ESHOPABCDEFGHJKLMN"); // Tidak ada 8 angka
-        Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87258", "VOUCHER", PaymentStatus.REJECTED.getValue(), invalidVoucher, order1);
+        Payment payment = new Payment("a2c47718-4b37-4664-81a7-f41bb87258",
+                "VOUCHER", PaymentStatus.REJECTED.getValue(), invalidVoucher, order1);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
         Payment result = paymentService.addPayment(order1, "VOUCHER", invalidVoucher);
 
         assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), result.getOrder().getStatus());
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
     @Test
     void testAddPaymentBankTransferRejected_EmptyBankName() {
         Map<String, String> invalidBankTransfer = Map.of("bankName", "", "referenceCode", "ABC1234567");
-        Payment payment = new Payment("37f51234-128a-51c4-309f-c3132ba56", "BANK_TRANSFER", PaymentStatus.REJECTED.getValue(), invalidBankTransfer, order2);
+        Payment payment = new Payment("37f51234-128a-51c4-309f-c3132ba56",
+                "BANK_TRANSFER", PaymentStatus.REJECTED.getValue(), invalidBankTransfer, order2);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
         Payment result = paymentService.addPayment(order2, "BANK_TRANSFER", invalidBankTransfer);
 
         assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), result.getOrder().getStatus());
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
     @Test
     void testAddPaymentBankTransferRejected_EmptyReferenceCode() {
         Map<String, String> invalidBankTransfer = Map.of("bankName", "XYZ Bank", "referenceCode", "");
-        Payment payment = new Payment("37f51234-128a-51c4-309f-c3132ba57", "BANK_TRANSFER", PaymentStatus.REJECTED.getValue(), invalidBankTransfer, order2);
+        Payment payment = new Payment("37f51234-128a-51c4-309f-c3132ba57",
+                "BANK_TRANSFER", PaymentStatus.REJECTED.getValue(), invalidBankTransfer, order2);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
         Payment result = paymentService.addPayment(order2, "BANK_TRANSFER", invalidBankTransfer);
 
         assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), result.getOrder().getStatus());
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
     @Test
     void testAddPaymentBankTransferRejected_BothEmpty() {
         Map<String, String> invalidBankTransfer = Map.of("bankName", "", "referenceCode", "");
-        Payment payment = new Payment("37f51234-128a-51c4-309f-c3132ba58", "BANK_TRANSFER", PaymentStatus.REJECTED.getValue(), invalidBankTransfer, order2);
+        Payment payment = new Payment("37f51234-128a-51c4-309f-c3132ba58",
+                "BANK_TRANSFER", PaymentStatus.REJECTED.getValue(), invalidBankTransfer, order2);
 
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
         Payment result = paymentService.addPayment(order2, "BANK_TRANSFER", invalidBankTransfer);
 
         assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), result.getOrder().getStatus());
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
@@ -167,7 +185,7 @@ class PaymentServiceImplTest {
         Payment result = paymentService.setStatus(payment, PaymentStatus.SUCCESS.getValue());
 
         assertEquals(PaymentStatus.SUCCESS.getValue(), result.getStatus());
-        assertEquals(PaymentStatus.SUCCESS.getValue(), result.getOrder().getStatus());
+        assertEquals(OrderStatus.SUCCESS.getValue(), result.getOrder().getStatus());
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
@@ -182,7 +200,7 @@ class PaymentServiceImplTest {
         Payment result = paymentService.setStatus(payment, PaymentStatus.REJECTED.getValue());
 
         assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
-        assertEquals(PaymentStatus.FAILED.getValue(), result.getOrder().getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), result.getOrder().getStatus());
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
 
