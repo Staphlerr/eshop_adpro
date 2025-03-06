@@ -1,5 +1,7 @@
 package id.ac.ui.cs.advprog.eshop.model;
 
+import id.ac.ui.cs.advprog.eshop.enums.OrderStatus;
+import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,10 +17,8 @@ class PaymentTest {
 
     @BeforeEach
     void setUp() {
-        this.id = "payment1";
+        this.id = "a2c47718-4b37-4664-81a7-f41bb87255";
         this.method = "VOUCHER_CODE";
-        this.status = "PENDING";
-
         this.paymentData = new HashMap<>();
         paymentData.put("voucherCode", "ESHOP1234ABC5678");
 
@@ -42,11 +42,11 @@ class PaymentTest {
 
     @Test
     void testCreatePaymentDefaultStatus() {
-        Payment payment = new Payment(id, method, status, this.paymentData, order);
+        Payment payment = new Payment(id, method, this.paymentData, order);
 
         assertEquals(id, payment.getId());
         assertEquals(method, payment.getMethod());
-        assertEquals(status, payment.getStatus());
+        assertEquals(PaymentStatus.PENDING.getValue(), payment.getStatus());
         assertEquals("ESHOP1234ABC5678", payment.getPaymentData().get("voucherCode"));
         assertSame(this.order, payment.getOrder());
         assertEquals("Sampo Cap Bambang", payment.getOrder().getProducts().get(0).getProductName());
@@ -58,10 +58,10 @@ class PaymentTest {
 
     @Test
     void testCreatePaymentSuccessStatus() {
-        Payment payment = new Payment(id, method, "SUCCESS", this.paymentData, order);
+        Payment payment = new Payment(id, method, PaymentStatus.SUCCESS.getValue(), this.paymentData, order);
 
-        assertEquals("SUCCESS", payment.getStatus());
-        assertEquals("SUCCESS", payment.getOrder().getStatus());
+        assertEquals(PaymentStatus.SUCCESS.getValue(), payment.getStatus());
+        assertEquals(OrderStatus.SUCCESS.getValue(), payment.getOrder().getStatus());
     }
 
     @Test
@@ -75,19 +75,19 @@ class PaymentTest {
 
     @Test
     void testSetStatusToSuccess() {
-        Payment payment = new Payment(id, method, "PENDING", this.paymentData, order);
-        payment.setStatus("SUCCESS");
+        Payment payment = new Payment(id, method, PaymentStatus.PENDING.getValue(), this.paymentData, order);
+        payment.setStatus(PaymentStatus.SUCCESS.getValue());
 
-        assertEquals("SUCCESS", payment.getStatus());
-        assertEquals("SUCCESS", payment.getOrder().getStatus());
+        assertEquals(PaymentStatus.SUCCESS.getValue(), payment.getStatus());
+        assertEquals(PaymentStatus.SUCCESS.getValue(), payment.getOrder().getStatus());
     }
 
     @Test
     void testSetStatusToRejected() {
-        Payment payment = new Payment(id, method, "PENDING", this.paymentData, order);
-        payment.setStatus("REJECTED");
+        Payment payment = new Payment(id, method, PaymentStatus.PENDING.getValue(), this.paymentData, order);
+        payment.setStatus(PaymentStatus.REJECTED.getValue());
 
-        assertEquals("REJECTED", payment.getStatus());
-        assertEquals("FAILED", payment.getOrder().getStatus());
+        assertEquals(PaymentStatus.REJECTED.getValue(), payment.getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), payment.getOrder().getStatus());
     }
 }
