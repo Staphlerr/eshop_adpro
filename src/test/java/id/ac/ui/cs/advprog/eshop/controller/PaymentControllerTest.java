@@ -65,7 +65,7 @@ class PaymentControllerTest {
     void testShowPaymentDetailForm() throws Exception {
         mockMvc.perform(get("/payment/detail"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("payment/detail"));
+                .andExpect(view().name("PaymentDetail"));
     }
 
     @Test
@@ -74,7 +74,7 @@ class PaymentControllerTest {
 
         mockMvc.perform(get("/payment/detail/" + mockPayment.getId()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("payment/detail"))
+                .andExpect(view().name("PaymentDetail"))
                 .andExpect(model().attribute("payment", mockPayment));
 
         verify(paymentService, times(1)).getPayment(mockPayment.getId());
@@ -86,7 +86,7 @@ class PaymentControllerTest {
 
         mockMvc.perform(get("/payment/admin/list"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("payment/admin-list"))
+                .andExpect(view().name("AdminPaymentList"))
                 .andExpect(model().attribute("payments", Collections.singletonList(mockPayment)));
 
         verify(paymentService, times(1)).getAllPayments();
@@ -98,7 +98,7 @@ class PaymentControllerTest {
 
         mockMvc.perform(get("/payment/admin/detail/" + mockPayment.getId()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("payment/admin-detail"))
+                .andExpect(view().name("AdminDetail"))
                 .andExpect(model().attribute("payment", mockPayment));
 
         verify(paymentService, times(1)).getPayment(mockPayment.getId());

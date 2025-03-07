@@ -69,7 +69,7 @@ class OrderControllerTest {
     void testShowCreateOrderForm() throws Exception {
         mockMvc.perform(get("/order/create"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("order/create"))
+                .andExpect(view().name("CreateOrder"))
                 .andExpect(model().attributeExists("order"));
     }
 
@@ -77,7 +77,7 @@ class OrderControllerTest {
     void testShowHistoryForm() throws Exception {
         mockMvc.perform(get("/order/history"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("order/history"));
+                .andExpect(view().name("OrderHistory"));
     }
 
     @Test
@@ -87,7 +87,7 @@ class OrderControllerTest {
         mockMvc.perform(post("/order/history")
                         .param("author", "Safira Sudrajat"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("order/history"))
+                .andExpect(view().name("OrderHistory"))
                 .andExpect(model().attribute("orders", Collections.singletonList(mockOrder)));
 
         verify(orderService, times(1)).findAllByAuthor("Safira Sudrajat");
@@ -99,7 +99,7 @@ class OrderControllerTest {
 
         mockMvc.perform(get("/order/pay/13652556-012a-4c07-b546-54eb1396d79b"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("order/pay"))
+                .andExpect(view().name("PayOrder"))
                 .andExpect(model().attribute("order", mockOrder));
 
         verify(orderService, times(1)).findById("13652556-012a-4c07-b546-54eb1396d79b");
@@ -132,7 +132,7 @@ class OrderControllerTest {
                         .param("method", "VOUCHER")
                         .param("voucherCode", "ESHOP1234ABC5678"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("order/pay-success"))
+                .andExpect(view().name("PayOrder"))
                 .andExpect(model().attribute("paymentId", "payment123"));
 
         verify(paymentService, times(1)).addPayment(mockOrder, "VOUCHER", paymentData);
