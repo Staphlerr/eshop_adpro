@@ -24,7 +24,6 @@ public class PaymentServiceImpl implements PaymentService {
         String paymentId = UUID.randomUUID().toString();
         Payment payment = new Payment(paymentId, method, PaymentStatus.PENDING.getValue(), paymentData, order);
 
-        // VOUCHER
         if ("VOUCHER".equals(method)) {
             String voucherCode = paymentData.get("voucherCode");
             if (voucherCode != null
@@ -36,7 +35,7 @@ public class PaymentServiceImpl implements PaymentService {
                 setStatus(payment, PaymentStatus.REJECTED.getValue());
             }
         }
-        // BANK_TRANSFER
+
         else if ("BANK_TRANSFER".equals(method)) {
             String bankName = paymentData.get("bankName");
             String referenceCode = paymentData.get("referenceCode");
@@ -58,15 +57,12 @@ public class PaymentServiceImpl implements PaymentService {
         if (!PaymentStatus.contains(status)) {
             throw new IllegalArgumentException("Invalid payment status");
         }
-        // Update payment status
         payment.setStatus(status);
 
-        // If payment is successful, update the order status accordingly
         if (PaymentStatus.SUCCESS.getValue().equals(status)) {
             payment.getOrder().setStatus(OrderStatus.SUCCESS.getValue());
         }
 
-        // Persist the changes
         return paymentRepository.save(payment);
     }
 
