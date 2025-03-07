@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payment Detail</title>
+</head>
+<body>
+<h1>Payment Detail</h1>
+
+<table border="1">
+    <tr>
+        <th>Payment ID</th>
+        <td th:text="${payment.id}"></td>
+    </tr>
+    <tr>
+        <th>Method</th>
+        <td th:text="${payment.method}"></td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td th:text="${payment.status}"></td>
+    </tr>
+    <tr>
+        <th>Order ID</th>
+        <td th:text="${payment.order.id}"></td>
+    </tr>
+</table>
+
+<h2>Update Status</h2>
+<form th:action="@{/payment/admin/set-status/{paymentId}(paymentId=${payment.id})}" method="post">
+    <input type="hidden" name="paymentId" th:value="${payment.id}" />
+    <label for="status">Select Status:</label>
+    <select name="status" id="status">
+        <option value="SUCCESS">Success</option>
+        <option value="REJECTED">Rejected</option>
+    </select>
+    <button type="submit">Update</button>
+</form>
+
+<br>
+<a href="/payment/admin/list">Back to Payment List</a>
+</body>
+</html>
