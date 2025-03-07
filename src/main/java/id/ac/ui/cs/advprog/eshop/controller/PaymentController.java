@@ -20,28 +20,28 @@ public class PaymentController {
 
     @GetMapping("/detail")
     public String showPaymentDetailForm() {
-        return "payment/detail";
+        return "PaymentDetail";
     }
 
     @GetMapping("/detail/{paymentId}")
     public String showPaymentDetail(@PathVariable String paymentId, Model model) {
         Payment payment = paymentService.getPayment(paymentId);
         model.addAttribute("payment", payment);
-        return "payment/detail";
+        return "PaymentDetail";
     }
 
     @GetMapping("/admin/list")
     public String showAllPayments(Model model) {
         List<Payment> payments = paymentService.getAllPayments();
         model.addAttribute("payments", payments);
-        return "payment/admin-list";
+        return "AdminPaymentList";
     }
 
     @GetMapping("/admin/detail/{paymentId}")
     public String showAdminPaymentDetail(@PathVariable String paymentId, Model model) {
         Payment payment = paymentService.getPayment(paymentId);
         model.addAttribute("payment", payment);
-        return "payment/admin-detail";
+        return "AdminDetail";
     }
 
     @PostMapping("/admin/set-status/{paymentId}")
