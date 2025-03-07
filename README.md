@@ -201,7 +201,7 @@ The implemented CI/CD workflows on GitHub Actions fully meet the definition of *
 ![img.png](img.png)
 </details>
 
-<details open>
+<details>
 <summary><b>Reflection on Module 3</b></summary>
 <br>
 
@@ -391,4 +391,49 @@ By applying SOLID principles, the project achieves:
 - **Scalability**: Supports future growth without excessive refactoring.
 
 These principles ensure that the codebase remains robust, clean, and adaptable to changing requirements.
+</details>
+
+<details open>
+<summary><b>Reflection on Module 4</b></summary>
+<br>
+
+### 📝 Reflection 4 for Exercise
+
+#### 1️⃣ Self-Reflection on TDD (Based on Percival, 2017)
+During the implementation of the TDD workflow, I followed the **Red-Green-Refactor** cycle, ensuring that each feature was backed by tests before implementation.
+
+##### **Was the TDD flow useful?**
+Yes, the TDD approach helped me in:
+- Structuring my code in a modular and testable way.
+- Preventing unnecessary complexity by focusing on passing the minimal required test cases first.
+- Catching errors early, making debugging more efficient.
+
+However, I faced challenges such as:
+- Strict stubbing errors in Mockito due to unexpected argument mismatches.
+- Needing to refactor tests to align with changing method signatures.
+
+##### **Things to Improve for Future Tests:**
+- Better **test case design** before writing the implementation.
+- More careful **mocking and stubbing** to avoid unnecessary mismatches.
+- Adding **more edge cases** early in the process to improve test coverage.
+
+---
+
+#### 2️⃣ Evaluating Tests Against the F.I.R.S.T. Principle
+The **F.I.R.S.T.** principle suggests that tests should be:
+- **Fast** ✅ Most tests executed quickly, but integration tests took longer.
+- **Isolated** ✅ Tests were independent, but a few had dependencies on other classes.
+- **Repeatable** ✅ Tests produced consistent results across multiple runs.
+- **Self-validating** ✅ Assertions provided clear pass/fail results.
+- **Timely** ⚠️ Some tests were written late due to debugging issues.
+
+##### **Things to Improve:**
+- Ensure all tests are **truly isolated** from each other to prevent flakiness.
+- Improve **mocking techniques** to prevent redundant test failures.
+- Write **tests before implementation** more consistently to maximize TDD benefits.
+
+---
+
+This reflection helps in improving our future development process by making tests more structured and reliable.
+
 </details>
