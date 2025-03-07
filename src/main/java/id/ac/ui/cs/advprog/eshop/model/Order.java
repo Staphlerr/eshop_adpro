@@ -3,6 +3,7 @@ import id.ac.ui.cs.advprog.eshop.enums.OrderStatus;
 import lombok.Builder;
 import lombok.Getter;
 import java.util.List;
+import java.util.ArrayList;
 
 @Builder
 @Getter
@@ -12,6 +13,11 @@ public class Order {
     Long orderTime;
     String author;
     String status;
+
+    public Order() {
+        this.products = new ArrayList<>();
+        this.status = OrderStatus.WAITING_PAYMENT.getValue(); // Set status default
+    }
 
     public Order(String id, List<Product> products, Long orderTime, String author) {
         this.id = id;
