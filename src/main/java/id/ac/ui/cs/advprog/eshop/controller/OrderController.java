@@ -49,7 +49,7 @@ public class OrderController {
         }
 
         model.addAttribute("order", order);
-        return "order/pay";
+        return "PayOrder";
     }
 
     @PostMapping("/pay/{orderId}")
@@ -63,6 +63,6 @@ public class OrderController {
 
         Payment payment = paymentService.addPayment(order, method, paymentData);
         model.addAttribute("paymentId", payment.getId());
-        return "order/pay-success";
+        return "PayOrder";
     }
 }
